@@ -3,9 +3,25 @@ from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db   ##means from __init__.py import db
 from flask_login import login_user, login_required, logout_user, current_user
-
+import pyrebase
 
 auth = Blueprint('auth', __name__)
+
+
+firebaseConfig = {
+  "apiKey": "AIzaSyBRrQeFV8TUDyzSSsJYw3E-ZCiorKUyXB0",
+  "authDomain": "devops-authenticaiton.firebaseapp.com",
+  "projectId": "devops-authenticaiton",
+  "storageBucket": "devops-authenticaiton.appspot.com",
+  "messagingSenderId": "640521249367",
+  "appId": "1:640521249367:web:cafba7d959be0242ed3912",
+  "measurementId": "G-Q1ZEETV5QJ",
+  "databaseURL": ""
+}
+
+firebase = pyrebase.initialize_app(firebaseConfig)
+authf = firebase.auth()
+
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -16,7 +32,7 @@ def login():
 
         user = User.query.filter_by(email=email).first()
         if user:
-            if check_password_hash(user.password, password):
+            if (user.password == password):
                 flash('Logged in successfully!', category='success')
                 login_user(user, remember=True)
                 return redirect(url_for('views.home'))
@@ -55,11 +71,16 @@ def sign_up():
         elif len(password1) < 7:
             flash('Password must be at least 7 characters.', category='error')
         else:
-            new_user = User(email=email, first_name=first_name, password=generate_password_hash(
-                password1, method='sha256'))
+            new_user = User(email=email, first_name=first_name, password=password1)
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
+            
+            user = authf.create_user_with_email_and_password(email, password1)
+            # Log the user in
+            #user = authf.sign_in_with_email_and_password(email, password)
+            print(user)
+
             flash('Account created!', category='success')
             return redirect(url_for('views.home'))
 
