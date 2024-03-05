@@ -2,3 +2,5 @@ flask
 Flask-SQLAlchemy
 flask-login
 pyrebase4
+openai
+python-dotenv

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db   ##means from __init__.py import db
@@ -30,16 +30,42 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        user = User.query.filter_by(email=email).first()
-        if user:
-            if (user.password == password):
-                flash('Logged in successfully!', category='success')
-                login_user(user, remember=True)
-                return redirect(url_for('views.home'))
-            else:
-                flash('Incorrect password, try again.', category='error')
-        else:
-            flash('Email does not exist.', category='error')
+
+        try:
+            # Attempt user sign-in using Pyrebase
+            userf = authf.sign_in_with_email_and_password(email, password)
+            user = User.query.filter_by(email=email).first()
+
+            # If no exception is thrown, sign-in was successful
+            # (You can access the user details from `userf`)
+            flash('Logged in successfully!', category='success')
+            #login_user(userf['localId'], remember=True)  # Use 'localId' for Flask-Login
+            login_user(user, remember=True)
+
+
+            return redirect(url_for('views.home')) 
+        
+        except:
+           flash('Incorrect password or email , try again.', category='error')
+
+            
+            
+      
+
+        
+
+    #     user = User.query.filter_by(email=email).first()
+    #     userf = authf.sign_in_with_email_and_password(email, password)
+
+    #     if user:
+    #         if (user.password == password):
+    #             flash('Logged in successfully!', category='success')
+    #             login_user(user, remember=True)
+    #             return redirect(url_for('views.home'))
+    #         else:
+    #             flash('Incorrect password, try again.', category='error')
+    #     else:
+    #         flash('Email does not exist.', category='error')
 
     return render_template("login.html", user=current_user)
 
@@ -78,7 +104,7 @@ def sign_up():
             
             user = authf.create_user_with_email_and_password(email, password1)
             # Log the user in
-            #user = authf.sign_in_with_email_and_password(email, password)
+            user = authf.sign_in_with_email_and_password(email, password1)
             print(user)
 
             flash('Account created!', category='success')
