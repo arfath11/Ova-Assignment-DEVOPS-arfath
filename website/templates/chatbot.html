@@ -8,6 +8,8 @@
 </head>
 <body>
   <h1>Chat With Me</h1>
+  <p><strong>You:</strong> {{ user_input }}</p> 
+  <p><strong>Bot:</strong> {{ bot_response }}</p>
   <form method="post" action="{{ url_for('views.chatbot') }}">
       <label for="message">Message:</label>
       <input type="text" id="message" name="message" required>

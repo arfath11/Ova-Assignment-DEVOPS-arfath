@@ -4,3 +4,4 @@ flask-login
 pyrebase4
 openai
 python-dotenv
+boto3
