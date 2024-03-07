@@ -1,17 +1,30 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Note
+from .models import Note,File
 from . import db
 import json
 from openai import OpenAI
 import os
-import boto3
+import uuid
+
+import boto3, botocore
 from dotenv import load_dotenv
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png'}
+
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 views = Blueprint('views', __name__)
 
 s3 = boto3.client('s3')
-
+s3 = boto3.resource(
+    service_name="s3",
+    region_name="ap-south-1",
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
+)
 
 
 
@@ -74,7 +87,7 @@ def chatbot():
     #render the chatbot tempalte with the repose text 
     chat_history.append(f"User: {user_input}\nChatbot: {bot_response}")
 
-    
+
 
     return render_template("chatbot.html", user_input = user_input, bot_response=bot_response,user=current_user)    
       
@@ -82,7 +95,30 @@ def chatbot():
 
 
 
+@views.route('/upload', methods=['GET', 'POST'])
+@login_required
+def upload():
+        if request.method == "POST":
+            uploaded_file = request.files["file-to-save"]
+            if not allowed_file(uploaded_file.filename):
+                return "FILE NOT ALLOWED!"
 
+            new_filename = uuid.uuid4().hex + '.' + uploaded_file.filename.rsplit('.', 1)[1].lower()
+
+            bucket_name = "bevops"
+            s3.Bucket(bucket_name).upload_fileobj(uploaded_file, new_filename)
+
+            file = File(original_filename=uploaded_file.filename, filename=new_filename,
+                bucket=bucket_name, region="ap-south-1",user_id = current_user.id)
+
+            db.session.add(file)
+            db.session.commit()
+
+            #return redirect(url_for("upload.html"))
+
+        files = File.query.filter_by(user_id = current_user.id).all()
+
+        return render_template("upload.html", user=current_user, files=files)
 
 
 

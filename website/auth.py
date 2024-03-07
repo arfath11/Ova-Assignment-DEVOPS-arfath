@@ -4,20 +4,26 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import db   ##means from __init__.py import db
 from flask_login import login_user, login_required, logout_user, current_user
 import pyrebase
+import os
 
 auth = Blueprint('auth', __name__)
 
 
+
 firebaseConfig = {
-  "apiKey": "AIzaSyBRrQeFV8TUDyzSSsJYw3E-ZCiorKUyXB0",
-  "authDomain": "devops-authenticaiton.firebaseapp.com",
-  "projectId": "devops-authenticaiton",
-  "storageBucket": "devops-authenticaiton.appspot.com",
-  "messagingSenderId": "640521249367",
-  "appId": "1:640521249367:web:cafba7d959be0242ed3912",
-  "measurementId": "G-Q1ZEETV5QJ",
-  "databaseURL": ""
+    "apiKey": os.getenv("API_KEY"),
+    "authDomain": os.getenv("AUTH_DOMAIN"),
+    "projectId": os.getenv("PROJECT_ID"),
+    "storageBucket": os.getenv("STORAGE_BUCKET"),
+    "messagingSenderId": os.getenv("MESSAGING_SENDER_ID"),
+    "appId": os.getenv("APP_ID"),
+    "measurementId": os.getenv("MEASUREMENT_ID"),
+    "databaseURL": ""
 }
+
+
+
+
 
 firebase = pyrebase.initialize_app(firebaseConfig)
 authf = firebase.auth()
@@ -54,18 +60,7 @@ def login():
 
         
 
-    #     user = User.query.filter_by(email=email).first()
-    #     userf = authf.sign_in_with_email_and_password(email, password)
 
-    #     if user:
-    #         if (user.password == password):
-    #             flash('Logged in successfully!', category='success')
-    #             login_user(user, remember=True)
-    #             return redirect(url_for('views.home'))
-    #         else:
-    #             flash('Incorrect password, try again.', category='error')
-    #     else:
-    #         flash('Email does not exist.', category='error')
 
     return render_template("login.html", user=current_user)
 
