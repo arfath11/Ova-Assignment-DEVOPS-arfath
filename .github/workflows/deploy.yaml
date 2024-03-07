@@ -33,14 +33,15 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
         run: |
-          scp -r * $EC2_USERNAME@$EC2_HOST:/home
+          ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "mkdir arf1"
+#          scp -r * $EC2_USERNAME@$EC2_HOST:/home
 
       - name: Run Bash Script To Delpoy App 🚀
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
         run: |
-          ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "mkdir arf"
+          ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "mkdir arf1"
 
       - name: Clean up SSH key 🚀
         if: always()
