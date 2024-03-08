@@ -35,6 +35,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "git fetch origin"
 
+
       - name: Run Bash Script To Delpoy App 
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
