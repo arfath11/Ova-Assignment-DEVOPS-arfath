@@ -42,7 +42,7 @@ jobs:
         run: |
           scp -r * $EC2_USERNAME@$EC2_HOST/home
           ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "whoami"
-
-      - name: Clean up SSH key 🚀
+#
+2      - name: Clean up SSH key 🚀
         if: always()
         run: rm -f ~/.ssh/id_rsa
