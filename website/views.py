@@ -30,7 +30,6 @@ s3 = boto3.resource(
 
 load_dotenv()
 client = OpenAI(
-    # This is the default and can be omitted
     api_key=os.environ.get("OPEN_API_KEY"),
 )
 

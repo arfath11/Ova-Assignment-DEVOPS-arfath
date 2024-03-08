@@ -10,7 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout current branch ✅
+      - name: Checkout current branch 
         uses: actions/checkout@v2
 
       - name: Set up SSH key and whitelist EC2 IP address 🐻‍❄️
@@ -20,7 +20,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Create .env file dynamically 🧨
+      - name: Create .env file dynamically 
         env:
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -28,14 +28,14 @@ jobs:
           echo "EC2_USERNAME=${EC2_USERNAME}" >> env
           echo "OPENAI_API_KEY=${OPENAI_API_KEY}" >> env
 
-      - name: Copy files to remote server 🚙
+      - name: Copy files to remote server 
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
         run: |
           ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "git fetch origin"
 
-      - name: Run Bash Script To Delpoy App 🚀
+      - name: Run Bash Script To Delpoy App 
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
