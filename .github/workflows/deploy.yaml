@@ -43,7 +43,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "sudo docker restart 6aaeadf7a6f2"
 #          scp -r * $EC2_USERNAME@$EC2_HOST:/home/ubuntu
 
-#
+
       - name: Clean up SSH key 🚀
         if: always()
         run: rm -f ~/.ssh/id_rsa
